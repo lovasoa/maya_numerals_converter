@@ -32,18 +32,19 @@ function base20(num) {
 function onChangeNum() {
   var value = document.getElementById("in").value | 0;
   var digits = base20(value);
-  var codePoints = digits.map(function(n){return 0x1D2E0 + n});
-  var mayan = String.fromCodePoint.apply(String, codePoints);
+  var mayan = digits.map(function(n){
+    return String.fromCharCode(0xD834, 0xDEE0 + n);
+  }).join('');
   document.getElementById("result").innerHTML = mayan;
   var explain = digits
-    .map((n,i) => (
-      n
-      ? n >= 5
-          ? `(${n/5|0} x 5 + ${n%5})`
-          : n%5
-      : "0"
-     ) + ` x 20^${digits.length - i - 1}`
-    ).join(" + ") + " = " + value;
+    .map(function(n,i) {
+      var expr =
+          n === 0 ? "0" :
+          n<5 ? n%5 :
+          "(" + (n/5|0) + " x 5 + " + (n%5) + ")";
+      var power = digits.length - i - 1;
+      return expr + " x 20^" + power;
+    }).join(" + \n") + " = " + value;
   document.getElementById("explain").innerHTML = explain;
 }
 
