@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <meta charset="utf8"/>
+    <title>Maya numerals</title>
+    <meta name="author" content="Ophir LOJKINE">
+    <meta name="description" content="Online decimal to maya number converter.">
+    <link rel="stylesheet" href="bare.min.css"/>
+<style>
+@font-face {
+  font-family: MayanNumerals;
+  src: url("./BabelStoneMayanNumerals.woff2");
+}
+.maya {
+  font-family: MayanNumerals;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 2.5em;
+  margin: 20px;
+}
+</style>
+<script>
+function base20(num) {
+  return num.toString(20).split("").map(s => parseInt(s, 20));
+}
+
+function onChangeNum() {
+  var value = document.getElementById("in").value | 0;
+  var digits = base20(value);
+  var codePoints = digits.map(n => 0x1D2E0 + n);
+  var mayan = String.fromCodePoint.apply(String, codePoints);
+  document.getElementById("result").innerHTML = mayan;
+  var explain = digits
+    .map((n,i) => (
+      n
+      ? n >= 5
+          ? `(${n/5|0} x 5 + ${n%5})`
+          : n%5
+      : "0"
+     ) + ` x 20^${digits.length - i - 1}`
+    ).join(" + ") + " = " + value;
+  document.getElementById("explain").innerHTML = explain;
+}
+
+</script>
+  </head>
+  <body onload="onChangeNum()">
+    <section>
+    <h1>Maya numerals</h1>
+    <p>
+      The maya civilisation used a particular numeral system,
+      counting in base 20 with
+      <a href="https://en.wikipedia.org/wiki/Maya_numerals">mayan numerals</a>.
+      A point represents one unit, and a bar represents five units.
+      Each row in the number represents a power of twenty.
+      Enter a number in the field below, and its mayan representation
+      will appear.
+    </p>
+    <label for="in">Base 10 number</label>
+    <input id=in type=number value=2018 min=0 oninput="onChangeNum()" />
+    <h5>Maya number</h5>
+    <p class=maya id=result></p>
+    <h5>Explanation</h5>
+    <code id=explain></code>
+    <p><small>Note: this tool does not implement the
+      <i>Modified vigesimal system</i> used in the
+      <a href="https://en.wikipedia.org/wiki/Mesoamerican_Long_Count_calendar">mayan calendar</a>.
+    </small></p>
+    </section>
+  </body>
+</html>
